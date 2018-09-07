@@ -1,0 +1,215 @@
+<?xml version="1.0"?>
+<robot name="carrier" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<!-- Included URDF/XACRO Files -->
+<xacro:include filename="$(find carrier_robot)/urdf/materials.urdf.xacro" />
+
+<!-- PROPERTY LIST -->
+<!--All units in m-kg-s-radians unit system -->
+<property name="M_PI" value="3.1415926535897931" />
+
+<!--Inertial macros for the box and cylinder. Units are kg*m^2-->
+<macro name="box_inertia" params="m x y z">
+	<inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0" iyy="${m*(x*x+z*z)/12}" iyz = "0" izz="${m*(x*x+z*z)/12}" />
+</macro>
+<macro name="cylinder_inertia" params="m r l">
+	<inertia  ixx="${m*(r*r/4+l*l/12)}" ixy = "0" ixz = "0" iyy="${m*(r*r/4+l*l/12)}" iyz = "0" izz="${m*r*r/2}" />
+</macro>
+
+<!-- Main Body-base -->
+<property name="base_x_size" value="0.20" />
+<property name="base_y_size" value="0.15" />
+<property name="base_z_size" value="0.10" />
+<property name="base_mass" value="3.00" />
+<!-- child robot base -->
+<property name="child_body_r" value="0.05" />
+<property name="child_body_l" value="0.15" />
+<property name="child_body_mass" value="1.30" />
+<!-- child robot wheel -->
+<property name="child_wheel_r" value="0.075" />
+<property name="child_wheel_l" value="0.02" />
+<property name="child_wheel_mass" value="0.1" />
+
+<!-- Body of carrier robot-->
+<link name="base_link">
+	<inertial>
+		<mass value="${base_mass}" />
+		<origin xyz="0 0 0" />
+		<box_inertia m="${base_mass}" x="${base_x_size}" y="${base_y_size}" z="${base_z_size}"/>
+	</inertial>
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<box size="${base_x_size} ${base_y_size} ${base_z_size}"/>
+		</geometry>
+		<material name="White" />
+	</visual>
+	<collision>
+		<origin xyz="0 0 0" rpy="0 0 0 " />
+		<geometry>
+			<box size="${base_x_size} ${base_y_size} ${base_z_size}"/>
+		</geometry>
+	</collision>
+</link>
+<gazebo reference="base_link">
+	<material>Gazebo/White</material>
+	<turnGravityOff>false</turnGravityOff>
+	<mu1>0.2</mu1>
+   <mu2>0.2</mu2>
+</gazebo>
+
+<!-- Body of child robot-->
+<link name="child_robot_base_link">
+	<inertial>
+		<mass value="${child_body_mass}" />
+		<origin xyz="0 0 0" />
+		<cylinder_inertia m="${child_body_mass}" r="${child_body_r}" l="${child_body_l}" />
+	</inertial>
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<cylinder radius="${child_body_r}" length="${child_body_l}"/>
+		</geometry>
+		<material name="Red" />
+	</visual>
+	<collision>
+		<origin xyz="0 0 0" rpy="0 0 0 " />
+		<geometry>
+			<cylinder radius="${child_body_r}" length="${child_body_l}"/>
+		</geometry>
+	</collision>
+</link>
+<gazebo reference="child_robot_base_link">
+	<material>Gazebo/Red</material>
+	<turnGravityOff>false</turnGravityOff>
+	<mu1>0.2</mu1>
+   <mu2>0.2</mu2>
+</gazebo>
+
+<!-- Joint between base link and child_robot_base_link -->
+<joint name="base_child_joint" type="continuous">
+	<parent link="base_link" />
+	<child link="child_robot_base_link"/>
+	<origin rpy="${M_PI/2} 0 0" xyz="${base_x_size/2+child_body_r} 0 0"/>
+</joint>
+
+<!-- ==========Child's right side wheel definition========== -->
+<!-- Right side wheel of child robot -->
+<link name="child_robot_wheel_R_link">
+	<inertial>
+		<mass value="${child_wheel_mass}" />
+		<origin xyz="0 0 0" />
+		<cylinder_inertia m="${child_wheel_mass}" r="${child_wheel_r}" l="${child_wheel_l}" />
+	</inertial>
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<cylinder radius="${child_wheel_r}" length="${child_wheel_l}"/>
+		</geometry>
+		<material name="Red" />
+	</visual>
+	<collision>
+		<origin xyz="0 0 0" rpy="0 0 0 " />
+		<geometry>
+			<cylinder radius="${child_wheel_r}" length="${child_wheel_l}"/>
+		</geometry>
+	</collision>
+</link>
+<gazebo reference="child_robot_wheel_R_link">
+	<material>Gazebo/Red</material>
+	<turnGravityOff>false</turnGravityOff>
+	<mu1>0.5</mu1>
+   <mu2>0.5</mu2>
+</gazebo>
+
+<!-- Joint between child_robot_base_link and child_robot_wheel_R_link -->
+<joint name="child_base_wheel_R_joint" type="continuous">
+	<parent link="child_robot_base_link" />
+	<child link="child_robot_wheel_R_link"/>
+	<origin rpy="0 0 ${M_PI/2}" xyz="0 0 ${child_body_l/2+0.01+child_wheel_l/2}"/>
+	<axis xyz="0 0 1" />
+</joint>
+
+<!-- Transmission of child_base_wheel_R_joint -->
+<transmission name="child_base_wheel_R_joint_trans">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="child_base_wheel_R_joint">
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="child_base_wheel_R_joint_motor">
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		<mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+</transmission>
+
+<!-- ==========Child's left side wheel definition========== -->
+<!-- Left side wheel of child robot -->
+<link name="child_robot_wheel_L_link">
+	<inertial>
+		<mass value="${child_wheel_mass}" />
+		<origin xyz="0 0 0" />
+		<cylinder_inertia m="${child_wheel_mass}" r="${child_wheel_r}" l="${child_wheel_l}" />
+	</inertial>
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<cylinder radius="${child_wheel_r}" length="${child_wheel_l}"/>
+		</geometry>
+		<material name="Red" />
+	</visual>
+	<collision>
+		<origin xyz="0 0 0" rpy="0 0 0 " />
+		<geometry>
+			<cylinder radius="${child_wheel_r}" length="${child_wheel_l}"/>
+		</geometry>
+	</collision>
+</link>
+<gazebo reference="child_robot_wheel_L_link">
+	<material>Gazebo/Red</material>
+	<turnGravityOff>false</turnGravityOff>
+	<mu1>0.5</mu1>
+   <mu2>0.5</mu2>
+</gazebo>
+
+<!-- Joint between child_robot_base_link and child_robot_wheel_L_link -->
+<joint name="child_base_wheel_L_joint" type="continuous">
+	<parent link="child_robot_base_link" />
+	<child link="child_robot_wheel_L_link"/>
+	<origin rpy="0 0 ${M_PI/2}" xyz="0 0 ${(-1)*(child_body_l/2+0.01+child_wheel_l/2)}"/>
+	<axis xyz="0 0 1" />
+</joint>
+	
+<link name="base_footprint"/>
+
+<!-- Transmission of child_base_wheel_L_joint -->
+<transmission name="child_base_wheel_L_joint_trans">
+	<type>transmission_interface/SimpleTransmission</type>
+	<joint name="child_base_wheel_L_joint">
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+	</joint>
+	<actuator name="child_base_wheel_L_joint_motor">
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		<mechanicalReduction>1</mechanicalReduction>
+	</actuator>
+</transmission>
+
+<!-- Base footprint -->
+<gazebo reference="base_footprint">
+	<turnGravityOff>false</turnGravityOff>
+</gazebo>
+
+<joint name="base_link_joint" type="fixed">
+	<origin xyz="0 0 0" rpy="0 0 0" />
+	<parent link="base_footprint"/>
+	<child link="base_link" />	
+</joint>
+
+<gazebo>
+	<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+		<robotNamespace>my_robo</robotNamespace>
+	</plugin>
+</gazebo>
+
+</robot>
+
+

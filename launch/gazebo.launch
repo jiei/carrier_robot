@@ -15,10 +15,11 @@
     <arg name="headless" value="$(arg headless)"/>
   </include>
  
-  <!--<param name="robot_description" command="$(find xacro)/xacro.py '$(arg model)' myvar:=true"/>-->
-	<param name="carrier_robot" command="$(find xacro)/xacro.py '$(arg model)'"/>
-  <!--<include file="$(find my_robo_description)/launch/control.launch"/>-->
+	<param name="robot_description" command="$(find xacro)/xacro.py '$(arg model)' myvar:=true"/>
+	<!-- <include file="$(find carrier_robot)/launch/control.launch"/> -->
    
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model my_robo -param carrier_robot"/>
+  <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model robot_description -param carrier_robot"/> -->
+
+	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model carrier_robot" />
  
 </launch>

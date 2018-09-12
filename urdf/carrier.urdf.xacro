@@ -15,6 +15,9 @@
 <macro name="cylinder_inertia" params="m r l">
 	<inertia  ixx="${m*(r*r/4+l*l/12)}" ixy = "0" ixz = "0" iyy="${m*(r*r/4+l*l/12)}" iyz = "0" izz="${m*r*r/2}" />
 </macro>
+<macro name="ellipse_inertia" params="m short long l">
+	<inertia  ixx="${m*(short*short)/4}" ixy = "0" ixz = "0" iyy="${m*(short*short+long*long)/4}" iyz = "0" izz="${m*(long*long)/4}" />
+</macro>
 
 <!-- Main Body-base -->
 <property name="base_x_size" value="0.20" />
@@ -25,6 +28,11 @@
 <property name="child_body_r" value="0.05" />
 <property name="child_body_l" value="0.15" />
 <property name="child_body_mass" value="1.30" />
+<!-- carrier robot wheel -->
+<property name="carrier_wheel_long" value="0.1" />
+<property name="carrier_wheel_short" value="0.05" />
+<property name="carrier_wheel_l" value="0.02" />
+<property name="carrier_wheel_mass" value="0.1" />
 <!-- child robot wheel -->
 <property name="child_wheel_r" value="0.075" />
 <property name="child_wheel_l" value="0.02" />
@@ -57,6 +65,45 @@
 	<mu1>0.2</mu1>
    <mu2>0.2</mu2>
 </gazebo>
+
+<!-- ==========Carrier's left side wheel definition========== -->
+<!-- Left side wheel of carrier robot -->
+<link name="carrier_robot_wheel_L_link">
+	<inertial>
+		<mass value="${carrier_wheel_mass}" />
+		<origin xyz="0 0 0" />
+		<ellipse_inertia m="${carrier_wheel_mass}" short="${carrier_wheel_short}" long="${carrier_wheel_long}" l="${carrier_wheel_l}" />
+	</inertial>
+	<visual>
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<geometry>
+			<mesh filename="package://carrier_robot/stl/ellipse_sample.STL" />
+		</geometry>
+		<material name="Black" />
+	</visual>
+	<collision>
+		<origin xyz="0 0 0" rpy="0 0 0 " />
+		<geometry>
+			<mesh filename="package://carrier_robot/stl/ellipse_sample.STL" />
+		</geometry>
+	</collision>
+</link>
+<gazebo reference="carrier_robot_wheel_L_link">
+	<material>Gazebo/Black</material>
+	<turnGravityOff>false</turnGravityOff>
+	<mu1>0.5</mu1>
+   <mu2>0.5</mu2>
+</gazebo>
+
+<!-- Joint between base_link and carrier_robot_wheel_L_link -->
+<joint name="carrier_base_wheel_L_joint" type="continuous">
+	<parent link="base_link" />
+	<child link="carrier_robot_wheel_L_link"/>
+	<origin rpy="0 0 0" xyz="${(-1)*(base_x_size/2-0.05)} ${base_y_size/2+carrier_wheel_l/2} 0" /> 
+	<axis xyz="0 1 0" />
+</joint>
+
+<!--${base_y_size/2+0.01+carrier_wheel_l/2}-->
 
 <!-- Body of child robot-->
 <link name="child_robot_base_link">
@@ -206,10 +253,8 @@
 
 <gazebo>
 	<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-		<robotNamespace>my_robo</robotNamespace>
+		<robotNamespace>carrier</robotNamespace>
 	</plugin>
 </gazebo>
 
 </robot>
-
-

@@ -1,14 +1,14 @@
 carrier:
-	joint_state_controller:
-		type: joint_state_controller/JointStateController
-		publish_rate: 50
-	
-	joint_velocity_controller:
-		type: effort_controllers/JointVelocityController
-		publish_rate: 50
-		joints:
-			-child_base_wheel_R_joint
-			-child_base_wheel_L_joint
-		gains:
-			child_base_wheel_R_joint:{p:10.0,i:0.01,d:10.0}
-			child_base_wheel_L_joint:{p:10.0,i:0.01,d:10.0}
+ joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+ joint_velocity_controller:
+  type: velocity_controllers/JointVelocityController
+  publish_rate: 50
+  joints:
+   -child_base_wheel_R_joint
+   -child_base_wheel_L_joint
+  gains:
+   child_base_wheel_R_joint:{p:10.0,i:0,d:0}
+   child_base_wheel_L_joint:{p:10.0,i:0,d:0}

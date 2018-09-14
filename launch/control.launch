@@ -4,7 +4,7 @@
   <!-- load the controllers -->
   <node name="controller_spawner" pkg="controller_manager"
   type="spawner" ns="carrier" output="screen"
-  args="joint_state_controller joint_velocity_controller"/>
+  args="joint_state_controller carrier_wheel_velocity_controller child_wheel_R_velocity_controller child_wheel_L_velocity_controller"/>
 
   <!-- convert joint states to TF transforms for rviz, etc -->
   <node name="robot_state_publisher" pkg="robot_state_publisher"

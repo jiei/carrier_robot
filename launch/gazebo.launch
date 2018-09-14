@@ -16,10 +16,13 @@
   </include>
  
 	<param name="robot_description" command="$(find xacro)/xacro.py '$(arg model)' myvar:=true"/>
-	<!-- <include file="$(find carrier_robot)/launch/control.launch"/> -->
+	<include file="$(find carrier_robot)/launch/control.launch"/> 
    
   <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model robot_description -param carrier_robot"/> -->
 
 	<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model carrier_robot" />
+
+	<node pkg="joy" name="joy_node" type="joy_node" />
+	<node pkg="carrier_robot" name="joy_to_rotation" type="joy_to_rotation" output="screen"/>
  
 </launch>

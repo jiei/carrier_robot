@@ -63,7 +63,7 @@
 	<material>Gazebo/White</material>
 	<turnGravityOff>false</turnGravityOff>
 	<mu1>0.2</mu1>
-   <mu2>0.2</mu2>
+	<mu2>0.2</mu2>
 </gazebo>
 
 <!-- ==========Carrier's wheels definition========== -->
@@ -99,7 +99,7 @@
 <joint name="carrier_base_wheel_R_joint" type="continuous">
 	<parent link="base_link" />
 	<child link="carrier_robot_wheel_R_link"/>
-	<origin rpy="0 0 0" xyz="${(-1)*(base_x_size/2-0.05)} ${(-1)*(base_y_size/2+0.02+carrier_wheel_l/2)} 0" /> 
+	<origin rpy="0 0 0" xyz="${(-1)*(base_x_size/2-0.05)} ${(-1)*(base_y_size/2+0.02+carrier_wheel_l/2)} 0" />
 	<axis xyz="0 1 0" />
 </joint>
 
@@ -107,10 +107,10 @@
 <transmission name="carrier_base_wheel_R_joint_trans">
 	<type>transmission_interface/SimpleTransmission</type>
 	<joint name="carrier_base_wheel_R_joint">
-		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 	</joint>
 	<actuator name="carrier_base_wheel_R_joint_motor">
-		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		<mechanicalReduction>1</mechanicalReduction>
 	</actuator>
 </transmission>
@@ -147,7 +147,7 @@
 <joint name="carrier_wheel_R-L_joint" type="fixed">
 	<parent link="carrier_robot_wheel_R_link" />
 	<child link="carrier_robot_wheel_L_link"/>
-	<origin rpy="0 0 0" xyz="0 ${base_y_size+0.02+carrier_wheel_l} 0" /> 
+	<origin rpy="0 0 0" xyz="0 ${base_y_size+0.02+carrier_wheel_l} 0" />
 	<!--<origin rpy="0 0 0" xyz="${(-1)*(base_x_size/2-0.05)} ${base_y_size/2+carrier_wheel_l/2} 0" /> -->
 </joint>
 
@@ -227,10 +227,10 @@
 <transmission name="child_base_wheel_R_joint_trans">
 	<type>transmission_interface/SimpleTransmission</type>
 	<joint name="child_base_wheel_R_joint">
-		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 	</joint>
 	<actuator name="child_base_wheel_R_joint_motor">
-		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		<mechanicalReduction>1</mechanicalReduction>
 	</actuator>
 </transmission>
@@ -271,17 +271,17 @@
 	<origin rpy="0 0 ${M_PI/2}" xyz="0 0 ${(-1)*(child_body_l/2+0.01+child_wheel_l/2)}"/>
 	<axis xyz="0 0 1" />
 </joint>
-	
+
 <link name="base_footprint"/>
 
 <!-- Transmission of child_base_wheel_L_joint -->
 <transmission name="child_base_wheel_L_joint_trans">
 	<type>transmission_interface/SimpleTransmission</type>
 	<joint name="child_base_wheel_L_joint">
-		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 	</joint>
 	<actuator name="child_base_wheel_L_joint_motor">
-		<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+		<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
 		<mechanicalReduction>1</mechanicalReduction>
 	</actuator>
 </transmission>
@@ -294,7 +294,7 @@
 <joint name="base_link_joint" type="fixed">
 	<origin xyz="0 0 0" rpy="0 0 0" />
 	<parent link="base_footprint"/>
-	<child link="base_link" />	
+	<child link="base_link" />
 </joint>
 
 <gazebo>
